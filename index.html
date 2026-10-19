@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1117" />
+  <title>GitSwipe: a random GitHub repo on every swipe</title>
+  <meta name="description" content="Scroll a feed of random GitHub projects. Open the good ones, save the rest for later." />
+  <!-- README HTML comes from strangers: script-src stays locked to this origin, which is the
+       real protection. img-src has to trust GitHub's image CDNs (camo / user-images) because
+       READMEs legitimately embed badges and screenshots. `file:` sources keep double-click
+       to open working; on a real host only 'self' applies. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data:; script-src 'self' file:; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data: https://*.githubusercontent.com https://github.com https://opengraph.githubassets.com; font-src 'self' file:; connect-src https://api.github.com; object-src 'none'; base-uri 'self'; frame-src 'none'; form-action 'none'" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230d1117'/><path d='M50 18l9 21 23 2-17 15 5 23-20-12-20 12 5-23-17-15 23-2z' fill='%23e3b341'/></svg>" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="compact-actions.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="brand">GitSwipe</h1>
+    <nav class="actions" aria-label="Main">
+      <button id="btnShuffle" class="icon-btn" aria-label="Shuffle feed" title="Shuffle feed"><span class="ico" data-icon="shuffle"></span></button>
+      <button id="btnSaved" class="icon-btn" aria-label="Saved repos" title="Saved repos">
+        <span class="ico" data-icon="bookmark"></span><span id="savedCount" class="badge" hidden>0</span>
+      </button>
+    </nav>
+  </header>
+
+  <main id="feed" class="feed" aria-label="Random repo feed"></main>
+
+  <footer class="legal-footer">
+    <span>© 2026 cartofell404</span>
+    <button id="btnLegal" type="button">Privacy &amp; Legal</button>
+    <a href="https://github.com/Cartofell404/gitswipe" target="_blank" rel="noopener">MIT License · Source</a>
+  </footer>
+
+  <div id="emptyState" class="empty-state" hidden>
+    <div class="spinner" aria-hidden="true"></div>
+    <p id="emptyMsg" role="status"></p>
+    <button id="btnRetry" class="btn btn-solid" hidden>Try again</button>
+  </div>
+
+  <div id="status" class="status" role="status" aria-live="polite" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <dialog id="savedPanel" class="drawer" aria-labelledby="savedTitle">
+    <div class="dlg-head">
+      <h2 id="savedTitle">Saved</h2>
+      <div class="row">
+        <button id="btnClearSaved" class="btn btn-ghost">Clear all</button>
+        <button class="icon-btn" data-close aria-label="Close"><span class="ico" data-icon="close"></span></button>
+      </div>
+    </div>
+    <div id="savedList" class="saved-list"></div>
+  </dialog>
+
+  <dialog id="legalDialog" class="modal legal" aria-labelledby="legalTitle">
+    <div class="dlg-head">
+      <h2 id="legalTitle">Privacy &amp; Legal</h2>
+      <button class="icon-btn" data-close aria-label="Close"><span class="ico" data-icon="close"></span></button>
+    </div>
+    <div class="legal-body">
+      <h3>1. Personal Data &amp; Analytics</h3>
+      <p>This application does not collect, store, or share any of your personal data. There are no tracking scripts, cookies, or third-party analytics (like Google Analytics) embedded in this website.</p>
+
+      <h3>2. Local Storage</h3>
+      <p>To make the application work properly, we use your browser's Local Storage to save your preferences (like saved repositories and the community-card choice). This data never leaves your device and you can clear it at any time using the "Clear all" button in the app or via your browser settings.</p>
+
+      <h3>3. Hosting, Server Logs &amp; GitHub</h3>
+      <p>This website is hosted using GitHub Pages. GitHub may collect server logs, including your IP address, for security and operational purposes. The app also loads repository data, avatars, banners and README images directly from GitHub (api.github.com and GitHub's image servers), so GitHub can see your IP address while you use it. Nothing is loaded from Google or other third parties: the display font is hosted on this site. For more details, please read the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a>.</p>
+
+      <h3>4. Contact &amp; Ownership</h3>
+      <p>This is a non-commercial, open-source hobby project created by <a href="https://github.com/Cartofell404" target="_blank" rel="noopener noreferrer">cartofell404</a>. If you have any questions or want to report an issue, you can reach out via GitHub.</p>
+    </div>
+  </dialog>
+
+  <dialog id="detailDialog" class="drawer detail" aria-labelledby="detailTitle">
+    <div class="read-progress" aria-hidden="true"><i></i></div>
+    <div class="dlg-head">
+      <h2 id="detailTitle"></h2>
+      <button class="icon-btn" data-close aria-label="Close"><span class="ico" data-icon="close"></span></button>
+    </div>
+    <div id="detailBody" class="detail-body"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

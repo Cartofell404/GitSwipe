@@ -1,0 +1,122 @@
+/* =====================================================================
+   compact-actions.css  —  paste at the VERY END of styles.css
+
+   One layout for every screen: the six actions (stars, Save, Details,
+   Share, Install, Open) sit in a single row ("dock") under the text,
+   instead of a tall column beside it. A row can't be taller than the
+   card, and it scales with the width. No new buttons, no menus.
+   ===================================================================== */
+
+/* ---- card frame: clear the fixed footer (~30px) with a little air ---- */
+.card { padding: 76px 18px calc(54px + env(safe-area-inset-bottom)); }
+@media (min-width: 700px) { .card { padding: 92px 24px max(64px, 12vh); } }
+
+.card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: clamp(12px, 2.2dvh, 22px);
+}
+
+/* ---- text block scales with the screen height ---- */
+.info { gap: clamp(8px, 1.7dvh, 16px); }
+.repo-name { font-size: clamp(30px, min(8vw, 6.4dvh), 60px); }
+.repo-desc { font-size: clamp(14.5px, min(2.4vw, 2.4dvh), 18px); }
+
+/* ---- the dock ---- */
+.rail {
+  position: static;
+  width: 100%;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+}
+.rail > * { flex: 1 1 0; min-width: 0; }
+.rail .rail-btn { gap: 4px; font-size: 11px; line-height: 1.2; }
+.rail .rail-btn .ico {
+  width: 100%;
+  max-width: 64px;
+  height: clamp(40px, 6dvh, 48px);
+  border-radius: 14px;
+}
+.rail .rail-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* star count = first cell of the dock, same height as the buttons */
+.rail .rail-count {
+  padding: 0;
+  gap: 2px;
+  align-content: center;
+  height: calc(clamp(40px, 6dvh, 48px) + 17px);
+}
+.rail .rail-count .ico svg { width: 22px; height: 22px; }
+.rail .rail-count .count { font-size: 14px; }
+
+/* Open = the primary action: a wide pill with its label inside */
+.rail .rail-btn.open {
+  flex: 1.9 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: clamp(40px, 6dvh, 48px);
+  border-radius: 14px;
+  background: var(--text);
+  color: var(--void, #0d1117);
+  font-size: 14px;
+  font-weight: 800;
+}
+.rail .rail-btn.open:hover { background: #fff; }
+.rail .rail-btn.open .ico {
+  width: auto; max-width: none; height: auto;
+  background: none; border: 0; border-radius: 0; backdrop-filter: none;
+  color: inherit;
+}
+.rail .rail-btn.open .ico svg { width: 20px; height: 20px; }
+.rail .rail-btn.open .rail-label { font-size: 14px; font-weight: 800; }
+
+/* ---- very narrow phones: icons only (Open keeps its word) ---- */
+@media (max-width: 350px) {
+  .rail .rail-btn:not(.open) .rail-label { display: none; }
+  .rail .rail-count { height: clamp(40px, 6dvh, 48px); }
+}
+
+/* ---- short screens: drop what Details already shows ---- */
+@media (max-height: 700px) {
+  .info .meta, .card:not(.community) .info .more { display: none; }
+  .topics li:nth-child(n+4) { display: none; }
+  .repo-desc { -webkit-line-clamp: 3; }
+}
+@media (max-height: 560px) {          /* landscape phones */
+  .card { padding-top: 64px; }
+  .info .topics, .info .why { display: none; }
+  .repo-desc { -webkit-line-clamp: 2; }
+  .rail .rail-btn:not(.open) .rail-label { display: none; }
+  .rail .rail-count { height: clamp(40px, 6dvh, 48px); }
+}
+
+/* ---- community card (Discord) ---- */
+.card.community .repo-name { font-size: clamp(30px, min(7vw, 5.6dvh), 52px); }
+.btn.join {
+  align-self: flex-start;
+  display: inline-flex;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 15px;
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------------
+   OPTIONAL: keep a slim side rail on tall desktop windows only.
+   Uncomment if you miss it. (Not needed; the dock works at every size.)
+
+@media (min-width: 900px) and (min-height: 760px) {
+  .card-inner { display: block; }
+  .rail { position: absolute; right: -96px; bottom: 0; width: auto;
+          flex-direction: column; align-items: center; gap: 12px; }
+  .rail > * { flex: none; }
+  .rail .rail-btn .ico { width: 50px; height: 50px; border-radius: 50%; max-width: none; }
+  .rail .rail-btn.open { height: auto; background: none; color: inherit; display: grid; }
+  .rail .rail-count { height: auto; }
+}
+--------------------------------------------------------------------- */
