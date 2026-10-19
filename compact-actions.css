@@ -1,5 +1,5 @@
 /* =====================================================================
-   compact-actions.css  —  paste at the VERY END of styles.css
+   compact-actions.css  —  loaded after styles.css
 
    One layout for every screen: the six actions (stars, Save, Details,
    Share, Install, Open) sit in a single row ("dock") under the text,
@@ -7,9 +7,9 @@
    card, and it scales with the width. No new buttons, no menus.
    ===================================================================== */
 
-/* ---- card frame: clear the fixed footer (~30px) with a little air ---- */
-.card { padding: 76px 18px calc(54px + env(safe-area-inset-bottom)); }
-@media (min-width: 700px) { .card { padding: 92px 24px max(64px, 12vh); } }
+/* ---- card frame: the footer bar is gone, so the dock can sit near the bottom edge ---- */
+.card { padding: 76px 18px calc(32px + env(safe-area-inset-bottom)); }
+@media (min-width: 700px) { .card { padding: 92px 24px max(40px, 7vh); } }
 
 .card-inner {
   display: flex;
@@ -83,7 +83,7 @@
 
 /* ---- short screens: drop what Details already shows ---- */
 @media (max-height: 700px) {
-  .info .meta, .card:not(.community) .info .more { display: none; }
+  .info .meta { display: none; }
   .topics li:nth-child(n+4) { display: none; }
   .repo-desc { -webkit-line-clamp: 3; }
 }
@@ -95,16 +95,41 @@
   .rail .rail-count { height: clamp(40px, 6dvh, 48px); }
 }
 
-/* ---- community card (Discord) ---- */
-.card.community .repo-name { font-size: clamp(30px, min(7vw, 5.6dvh), 52px); }
+/* ---- promo cards (Discord, star, follow, feedback, roadmap, take-a-break) ---- */
+.card.promo .repo-name { font-size: clamp(30px, min(7vw, 5.6dvh), 52px); }
+.promo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 18px;
+  margin-top: 4px;
+}
 .btn.join {
-  align-self: flex-start;
   display: inline-flex;
-  padding: 12px 20px;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 0 20px;
   border-radius: 14px;
+  border-color: transparent;
+  background: var(--text);
+  color: var(--void, #0d1117);
   font-size: 15px;
+  font-weight: 800;
   text-decoration: none;
 }
+.btn.join:hover { background: #fff; filter: none; }
+.btn.join svg { width: 18px; height: 18px; }
+.promo-skip {
+  min-height: 46px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+.promo-skip:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------------------------------------------------------------------
    OPTIONAL: keep a slim side rail on tall desktop windows only.

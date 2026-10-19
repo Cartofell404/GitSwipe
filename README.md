@@ -13,9 +13,10 @@ It's a static site. No backend, no build step, no dependencies, no tracking, no 
 - **Mixed discovery feed.** Every batch blends popular, mid-size and hidden-gem repos across languages and ages, so the feed never clumps around one kind of project.
 - **Clone command in one tap.** Every card copies a ready `git clone <url>` line. No guessed package names: `npm i something` can quietly install a different project, so GitSwipe doesn't guess.
 - **One-row action dock.** Stars, Save, Details, Share, Clone and Open sit in a single row under the text, so the buttons can never be taller than the card.
-- **Community card.** Once every ~14 repos a soft Discord invitation appears. Join or dismiss it and it never comes back.
+- **Rotating in-feed cards.** Once every ~12 repos a soft card appears between the repos: star the project, follow the author, send feedback, read the roadmap, join the Discord (once an invite is set) or take a break. Each kind never comes back once you use or dismiss it.
 - **Snap scrolling.** One repo per screen, infinite scroll, works on phones and desktop.
-- **Details view.** Banner, stats, topics, license, dates and the rendered README, without leaving the app.
+- **Details view.** Tap the title or description (or the Details button) for the banner, stats, topics, license, dates and the rendered README, without leaving the app.
+- **Source on GitHub, up top.** A GitHub link and a Privacy & Legal button live in the top bar, so nothing covers the feed at the bottom.
 - **Share.** Native share sheet where the platform has one, clipboard copy everywhere else.
 - **Star count up front.** Every card shows the repo's GitHub star count in big; the Open button takes you straight to the repo.
 - **Save for later.** Saved repos live in your browser and open from the side panel.
@@ -30,13 +31,13 @@ Open the **[live demo](https://cartofell404.github.io/GitSwipe/)**. There is not
 | --- | --- |
 | Next / previous repo | Swipe or scroll, or press Down / Up |
 | Save | Save button on the card, then open the bookmark in the top bar |
-| Read more | Details button or "Read more" on the card |
+| Read more | Tap the title or description, or the Details button |
 | Open on GitHub | The big Open button on the card |
 | Copy clone command | Terminal button on the card dock |
 | Share a repo | Share button on the card dock |
 | New random feed | Shuffle button in the top bar |
-| Join the Discord | Community card in the feed, or the footer link once configured |
-| Privacy & Legal | Link in the footer |
+| Join the Discord | In-feed card, or the link in Privacy & Legal, once configured |
+| Privacy & Legal | The (i) button in the top bar |
 
 ## Run it locally
 
@@ -61,12 +62,12 @@ GitSwipe is plain static files, so any static host works.
 - Data comes straight from GitHub's API in your browser: repository search, plus the README via `/repos/{owner}/{repo}/readme`.
 - README HTML from GitHub is sanitized before display, and relative links and images are resolved to GitHub URLs.
 - A Content Security Policy in `index.html` caps what the page may load, which matters because README HTML comes from strangers.
-- Saved repos live in `localStorage` under `gitswipe_*` keys, along with the community-card choice (`gitswipe_discord`).
-- The Discord community card is off until you set a real invite in `app.js` (`DISCORD_URL`).
+- Saved repos (`gitswipe_saved`) and which in-feed cards you dismissed (`gitswipe_promos`) live in `localStorage`.
+- The Discord card and link stay off until you set a real invite in `app.js` (`DISCORD_URL`). The other in-feed cards are defined in the `PROMOS` list in the same file.
 
 ## Privacy
 
-The full text is in the app under **Privacy & Legal** in the footer. Short version:
+The full text is in the app under **Privacy & Legal** (the (i) button in the top bar). Short version:
 
 - No analytics, no cookies, no server of ours. Your browser talks directly to `api.github.com`.
 - Saved repos are stored in your browser's `localStorage` and never leave your device.
@@ -76,10 +77,10 @@ The full text is in the app under **Privacy & Legal** in the footer. Short versi
 ## Project structure
 
 ```
-index.html          page shell: feed, top bar, panels, dialogs and the legal footer
+index.html          page shell: feed, top bar, panels and dialogs (including Privacy & Legal)
 styles.css          all styling
 compact-actions.css the one-row action dock (drop-in layout layer, loaded last)
-app.js              search, feed, saving, details, the Discord community card
+app.js              search, feed, saving, details, the in-feed promo cards
 fonts/              self-hosted display font (bricolage-grotesque-latin.woff2)
 ROADMAP.md          what's planned next
 LICENSE.md          MIT

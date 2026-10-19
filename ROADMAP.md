@@ -14,7 +14,8 @@
 ## Now: polish and trust (do first, all small)
 
 - [x] **Compact action dock.** Six actions in one row under the text, so they can never be taller than the card (`compact-actions.css`).
-- [x] **Discord community card + footer link.** One soft in-feed card per ~14 repos, dismissible forever (inline in `app.js`). Needs a real invite in `DISCORD_URL` to switch on.
+- [x] **Rotating in-feed cards + Discord.** One soft card per ~12 repos, rotating between Discord, star, follow, feedback, roadmap and a take-a-break nudge; each kind is dismissible forever (`PROMOS` in `app.js`). Discord needs a real invite in `DISCORD_URL` to switch on.
+- [x] **Nothing covers the feed.** The fixed footer is gone: Source on GitHub and Privacy & Legal moved to the top bar.
 - [x] **Install command safety.** Today `npm i <repo-name>`, `pip install <repo-name>` etc. can install the wrong package. Use `git clone` for everything, or verify the registry entry points back to this repo first.
 - [x] **Privacy text matches reality.** Self-host the font (also faster), or say that Google Fonts receives the visitor's IP.
 - [x] **Honest labels.** "Trending" only if it is trending (see Nightly pool). Otherwise "Popular".
@@ -31,7 +32,7 @@
 - [ ] **Double-tap to save** with a small bookmark animation. The signature gesture of this kind of app.
 - [ ] **No repeats across sessions:** remember the last few thousand seen repo IDs.
 - [ ] **Windowed feed:** remove far-away cards from the page, so long sessions stay fast on phones.
-- [ ] **Tap the title or description to open Details**, then drop the separate "Read more" link.
+- [x] **Tap the title or description to open Details**, and the separate "Read more" link is gone.
 - [ ] **Back / undo** for the last card, and **"Not interested"** to hide a repo or owner.
 - [ ] **Keyboard shortcuts:** S save, D details, O open, ? shows the list.
 - [ ] **Deep links:** `#owner/repo` opens that repo's details. A link posted in Discord lands inside GitSwipe.
@@ -86,8 +87,8 @@ Not needed for browsing, so it waits until the app has a reason for accounts.
 **Server layout:** `#welcome`, `#rules`, `#announcements`, `#show-your-find`, `#repo-of-the-day`, `#feedback`, `#bugs`, `#dev`, `#off-topic`.
 **Basics:** non-expiring invite, a few moderators, clear rules, verification level set to at least "low", and report channels. You are responsible for moderating what your server hosts.
 **Ways into the server from the app**
-- [x] Footer link
-- [x] In-feed community card, once per ~14 repos, never again after one dismissal
+- [x] Link in Privacy & Legal
+- [x] In-feed card, rotating with other cards, never again after one dismissal
 - [ ] "Share to Discord" in the Share button (copies a formatted message)
 - [ ] After a streak milestone: "7 days. Come tell us what you found."
 

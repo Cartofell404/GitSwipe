@@ -16,6 +16,7 @@ const store = {
 
 const STORAGE_KEYS = {
   SAVED: "gitswipe_saved",
+  PROMOS: "gitswipe_promos", // ids of the in-feed cards the visitor dismissed or used
 };
 
 // One-time migration: storage keys were "gittok_*" before the rename to GitSwipe.
@@ -58,6 +59,12 @@ const ICONS = {
   issue: '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h0"/>',
   terminal: '<path d="M4 17l6-6-6-6M12 19h8"/>',
   bars: '<path d="M4 20v-6M10 20V5M16 20v-9M22 20H2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h0"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+  map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14"/>',
+  pause: '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>',
   gem: '<path d="M12 21 3 9l3-6h12l3 6z"/><path d="M3 9h18M8 9l4 12 4-12M8 3 6 9M16 3l2 6"/>',
 };
 const icon = (n) =>
@@ -269,29 +276,89 @@ async function ensureContent() {
   updateEmpty();
 }
 
-/* ---------------- community card (Discord) ----------------
-   Looks like any other card, appears once every COMMUNITY_EVERY repos, and never comes
-   back once answered (localStorage: gitswipe_discord, covered by the Privacy & Legal text).
+/* ---------------- promo cards ----------------
+   Looks like any other card and shows up once every PROMO_EVERY repos. The kinds rotate
+   (Discord, star, follow, feedback, roadmap, take-a-break) so it is never the same pitch twice
+   in a row. Dismiss or use one and that kind never comes back (localStorage: gitswipe_promos,
+   covered by the Privacy & Legal text). The take-a-break card is the exception: it has nothing
+   to sell, so it may return.
 
-   TO TURN IT ON: set DISCORD_URL to a permanent invite (Server settings > Invites >
-   "Never expires"). While it is left as the placeholder, the card and the footer link
-   stay hidden, so nothing points at a dead invite. */
+   TO TURN DISCORD ON: set DISCORD_URL to a permanent invite (Server settings > Invites >
+   "Never expires"). While it is left as the placeholder, the Discord card and the link in
+   Privacy & Legal stay hidden, so nothing points at a dead invite. */
 const DISCORD_URL = "https://discord.gg/YOUR-INVITE"; // <- your permanent invite
-const COMMUNITY_EVERY = 14;                            // one card per 14 repos
-const DISCORD_READY = DISCORD_URL.startsWith("https://discord.gg/") || DISCORD_URL.startsWith("https://discord.com/invite/");
-const discordMuted = () => store.get("gitswipe_discord") === "1";
+const REPO_URL = "https://github.com/Cartofell404/gitswipe";
+const PROFILE_URL = "https://github.com/Cartofell404";
+const PROMO_EVERY = 12; // one card per 12 repos
+const DISCORD_READY = !DISCORD_URL.includes("YOUR-INVITE") &&
+  (DISCORD_URL.startsWith("https://discord.gg/") || DISCORD_URL.startsWith("https://discord.com/invite/"));
+const GH_MARK = '<svg class="gh" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 let reposShown = 0;
 
-if (DISCORD_READY) { // a passive footer link, only once a real invite is configured
+const PROMOS = [
+  { id: "discord", ready: DISCORD_READY, accent: "#5865F2", glyph: "#", icon: "chat", why: "Community",
+    title: "Found something good?",
+    text: "Share your finds, get recommendations and help shape what GitSwipe becomes.",
+    cta: "Join the Discord", href: DISCORD_URL },
+  { id: "star", accent: "#e3b341", glyph: "*", icon: "star", why: "Open source",
+    title: "Enjoying GitSwipe?",
+    text: "A star on GitHub helps other developers find it. It's free and takes one tap.",
+    cta: "Star on GitHub", href: REPO_URL, gh: true },
+  { id: "follow", accent: "#2f81f7", glyph: "@", icon: "user", why: "Made by",
+    title: "Built by cartofell404",
+    text: "Follow along on GitHub for more small, useful tools like this one.",
+    cta: "Follow on GitHub", href: PROFILE_URL, gh: true },
+  { id: "idea", accent: "#3fb950", glyph: "?", icon: "bulb", why: "Feedback",
+    title: "Missing something?",
+    text: "Report a bug or suggest a feature. It only takes a minute on GitHub.",
+    cta: "Open an issue", href: REPO_URL + "/issues/new", gh: true },
+  { id: "roadmap", accent: "#a371f7", glyph: "//", icon: "map", why: "Roadmap",
+    title: "See what's next",
+    text: "Undo, deep links, a daily reading goal and smarter feeds are on the list. Tell us what to build first.",
+    cta: "Read the roadmap", href: REPO_URL + "/blob/main/ROADMAP.md" },
+  // Nothing to sell: just a nudge to stop scrolling, in line with the app's goal. Can come back.
+  { id: "break", session: true, when: () => reposShown >= 24, accent: "#f0883e", glyph: "zZ", icon: "pause", why: "Take a break",
+    title: "Try one before you swipe on",
+    text: () => state.saved.length
+      ? "Swiping is only useful if something gets used. Pick a saved repo and actually try it."
+      : "Swiping is only useful if something gets used. Save one you like, then try it.",
+    cta: "Open saved", action: () => { renderSaved(); savedPanel.showModal(); }, needsSaved: true, skip: "Keep swiping" },
+];
+
+const dismissedPromos = () => new Set(store.list(STORAGE_KEYS.PROMOS));
+function dismissPromo(id) {
+  const set = dismissedPromos();
+  set.add(id);
+  store.set(STORAGE_KEYS.PROMOS, JSON.stringify([...set]));
+}
+// older versions only had the Discord card (gitswipe_discord = "1" once dismissed)
+if (store.get("gitswipe_discord") === "1") dismissPromo("discord");
+store.del("gitswipe_discord");
+
+if (DISCORD_READY) { // a passive link in Privacy & Legal, only once a real invite is configured
   const link = document.createElement("a");
   link.href = DISCORD_URL;
   link.target = "_blank";
   link.rel = "noopener";
   link.textContent = "Discord";
-  document.querySelector(".legal-footer")?.appendChild(link);
+  document.querySelector(".legal-foot")?.appendChild(link);
 }
 
-/* render one batch, slipping the community card in at the cadence */
+/* pick the next promo: shuffled round, never the same one twice in a row */
+let promoQueue = [], lastPromo = null;
+function nextPromo() {
+  const done = dismissedPromos();
+  const live = PROMOS.filter((p) => p.ready !== false && (p.session || !done.has(p.id)) && (!p.when || p.when()));
+  if (!live.length) return null;
+  promoQueue = promoQueue.filter((p) => live.includes(p));
+  if (!promoQueue.length) {
+    promoQueue = shuffleArr(live);
+    if (live.length > 1 && promoQueue[0] === lastPromo) promoQueue.push(promoQueue.shift());
+  }
+  return (lastPromo = promoQueue.shift());
+}
+
+/* render one batch, slipping a promo card in at the cadence */
 function renderBatch(count) {
   const slice = state.buffer.splice(0, count);
   if (!slice.length) return;
@@ -299,30 +366,43 @@ function renderBatch(count) {
   const frag = document.createDocumentFragment();
   slice.forEach((repo, i) => {
     frag.appendChild(buildCard(repo, first && i === 0));
-    if (++reposShown % COMMUNITY_EVERY === 0 && DISCORD_READY && !discordMuted()) {
-      frag.appendChild(buildCommunityCard());
+    if (++reposShown % PROMO_EVERY === 0) {
+      const p = nextPromo();
+      if (p) frag.appendChild(buildPromoCard(p));
     }
   });
   feed.appendChild(frag);
 }
 
-function buildCommunityCard() {
+function buildPromoCard(p) {
   const el = document.createElement("section");
-  el.className = "card community";
+  el.className = "card promo";
+  el.dataset.promo = p.id;
+  el.setAttribute("aria-label", p.title);
+  el.style.setProperty("--accent", p.accent);
+  const text = typeof p.text === "function" ? p.text() : p.text;
+  const showPrimary = p.href || (p.action && (!p.needsSaved || state.saved.length));
+  const primary = !showPrimary ? ""
+    : p.href
+      ? `<a class="btn join" href="${esc(p.href)}" target="_blank" rel="noopener">${p.gh ? GH_MARK : ""}<span>${esc(p.cta)}</span></a>`
+      : `<button type="button" class="btn join">${icon("bookmark")}<span>${esc(p.cta)}</span></button>`;
   el.innerHTML = `
+    <div class="glyph" aria-hidden="true">${esc(p.glyph)}</div>
     <div class="card-inner">
       <div class="info">
-        <span class="why">Community</span>
-        <h2 class="repo-name">Found something good?</h2>
-        <p class="repo-desc">Share your finds, get recommendations and help shape what GitSwipe becomes.</p>
-        <a class="btn btn-solid join" href="${DISCORD_URL}" target="_blank" rel="noopener">Join the Discord</a>
-        <button class="more" data-act="skip">Not now</button>
+        <span class="why">${icon(p.icon)}<span>${esc(p.why)}</span></span>
+        <h2 class="repo-name">${esc(p.title)}</h2>
+        <p class="repo-desc">${esc(text)}</p>
+        <div class="promo-actions">
+          ${primary}
+          <button type="button" class="promo-skip">${esc(p.skip || "No thanks")}</button>
+        </div>
       </div>
     </div>`;
-  const mute = () => store.set("gitswipe_discord", "1");
-  el.querySelector(".join").addEventListener("click", mute);
-  el.querySelector('[data-act="skip"]').addEventListener("click", () => {
-    mute();
+  const finish = () => { if (!p.session) dismissPromo(p.id); };
+  el.querySelector(".join")?.addEventListener("click", () => { finish(); p.action?.(); });
+  el.querySelector(".promo-skip").addEventListener("click", () => {
+    finish();
     const next = el.nextElementSibling; // a declined card shouldn't linger
     el.remove();
     if (next) next.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -350,9 +430,8 @@ function buildCard(repo, isFirst) {
         <a class="owner" href="https://github.com/${encodeURIComponent(repo.owner.login)}" target="_blank" rel="noopener">
           <img src="${esc(avatar(repo.owner.avatar_url, 64))}" alt="" loading="lazy" /><span>${owner}</span>
         </a>
-        <h2 class="repo-name">${esc(repo.name)}</h2>
-        <p class="repo-desc">${esc(repo.description || "No description provided.")}</p>
-        <button class="more" data-act="details">Read more</button>
+        <h2 class="repo-name" data-act="details" title="Open details">${esc(repo.name)}</h2>
+        <p class="repo-desc" data-act="details" title="Open details">${esc(repo.description || "No description provided.")}</p>
         ${topics.length ? `<ul class="topics">${topics.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
         <div class="stats">
           <span>${icon("fork")}${fmt(repo.forks_count)}</span>

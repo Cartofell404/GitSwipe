@@ -19,6 +19,10 @@
   <header class="topbar">
     <h1 class="brand">GitSwipe</h1>
     <nav class="actions" aria-label="Main">
+      <a class="pill-btn" href="https://github.com/Cartofell404/gitswipe" target="_blank" rel="noopener" aria-label="Source on GitHub" title="Source on GitHub">
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg><span>Source on GitHub</span>
+      </a>
+      <button id="btnLegal" type="button" class="icon-btn" aria-label="Privacy and legal" title="Privacy &amp; legal"><span class="ico" data-icon="info"></span></button>
       <button id="btnShuffle" class="icon-btn" aria-label="Shuffle feed" title="Shuffle feed"><span class="ico" data-icon="shuffle"></span></button>
       <button id="btnSaved" class="icon-btn" aria-label="Saved repos" title="Saved repos">
         <span class="ico" data-icon="bookmark"></span><span id="savedCount" class="badge" hidden>0</span>
@@ -28,11 +32,6 @@
 
   <main id="feed" class="feed" aria-label="Random repo feed"></main>
 
-  <footer class="legal-footer">
-    <span>© 2026 cartofell404</span>
-    <button id="btnLegal" type="button">Privacy &amp; Legal</button>
-    <a href="https://github.com/Cartofell404/gitswipe" target="_blank" rel="noopener">MIT License · Source</a>
-  </footer>
 
   <div id="emptyState" class="empty-state" hidden>
     <div class="spinner" aria-hidden="true"></div>
@@ -64,13 +63,18 @@
       <p>This application does not collect, store, or share any of your personal data. There are no tracking scripts, cookies, or third-party analytics (like Google Analytics) embedded in this website.</p>
 
       <h3>2. Local Storage</h3>
-      <p>To make the application work properly, we use your browser's Local Storage to save your preferences (like saved repositories and the community-card choice). This data never leaves your device and you can clear it at any time using the "Clear all" button in the app or via your browser settings.</p>
+      <p>To make the application work properly, we use your browser's Local Storage to save your preferences (like saved repositories and which in-feed cards you have dismissed). This data never leaves your device and you can clear it at any time using the "Clear all" button in the app or via your browser settings.</p>
 
       <h3>3. Hosting, Server Logs &amp; GitHub</h3>
       <p>This website is hosted using GitHub Pages. GitHub may collect server logs, including your IP address, for security and operational purposes. The app also loads repository data, avatars, banners and README images directly from GitHub (api.github.com and GitHub's image servers), so GitHub can see your IP address while you use it. Nothing is loaded from Google or other third parties: the display font is hosted on this site. For more details, please read the <a href="https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement" target="_blank" rel="noopener noreferrer">GitHub Privacy Statement</a>.</p>
 
       <h3>4. Contact &amp; Ownership</h3>
       <p>This is a non-commercial, open-source hobby project created by <a href="https://github.com/Cartofell404" target="_blank" rel="noopener noreferrer">cartofell404</a>. If you have any questions or want to report an issue, you can reach out via GitHub.</p>
+    </div>
+    <div class="legal-foot">
+      <span>© 2026 cartofell404</span>
+      <a href="https://github.com/Cartofell404/gitswipe/blob/main/LICENSE.md" target="_blank" rel="noopener">MIT License</a>
+      <a href="https://github.com/Cartofell404/gitswipe" target="_blank" rel="noopener">Source on GitHub</a>
     </div>
   </dialog>
 
