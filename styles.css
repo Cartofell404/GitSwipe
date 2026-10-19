@@ -53,8 +53,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: linear-gradient(to bottom, rgba(13,17,23,.85), transparent);
 }
 .topbar > * { pointer-events: auto; }
-/* line the bar up with the card column (680px) so brand and buttons share its edges */
-@media (min-width: 700px) { .topbar { padding-inline: max(24px, calc((100% - 680px) / 2)); } }
+@media (min-width: 700px) { .topbar { padding-inline: 28px; } } /* brand in the left corner, buttons in the right */
 .brand { font: 800 22px var(--display); letter-spacing: -.03em; }
 .actions { display: flex; align-items: center; gap: 8px; }
 
@@ -406,12 +405,12 @@ dialog[open]::backdrop { opacity: 1; }
 .drawer.detail {
   position: fixed !important;
   inset: auto 0 0 0 !important;       /* bottom-anchored */
-  width: min(760px, 100%) !important; /* centered column on desktop, full width on phones */
+  width: 100% !important;             /* full width on every screen, no gap on the right */
   height: auto !important;
   max-width: none !important;
   max-height: min(92vh, 92dvh) !important;
   margin: 0 auto !important;
-  border-width: 1px 1px 0 !important;
+  border-width: 1px 0 0 !important;
   border-radius: 20px 20px 0 0;
   overflow: hidden;
   align-self: flex-end !important;    /* defeats Chrome's dialog top-layer centering */
